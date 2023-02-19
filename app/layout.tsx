@@ -1,12 +1,41 @@
 import './globals.scss';
+import { initializeApollo } from '@/util/client';
+import { gql } from '@apollo/client';
+import { cookies } from 'next/headers';
 import Link from 'next/link';
 import styles from './layout.module.scss';
 
-export default function RootLayout({
+export const metadata = {
+  title: {
+    default: 'animals4everyone',
+    template: '%s | animals4everyone',
+  },
+  icons: {
+    shortcut: '/favicon.ico',
+  },
+};
+
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const client = initializeApollo(null);
+  const nextCookies = cookies();
+
+  const fakeSessionToken = nextCookies.get('fakeSessionToken');
+
+  const { data } = await client.query({
+    query: gql`
+      query GetLoggedInAnimalByFirstName($firstName: String! = ${fakeSessionToken?.value}) {
+        getLoggedInAnimalByFirstName(firstName: $firstName) {
+          accessory
+          firstName
+        }
+      }
+    `,
+  });
+
   return (
     <html lang="en">
       <body>
@@ -17,9 +46,12 @@ export default function RootLayout({
               <Link href="/animals">Animals</Link>
               <Link href="/animals/admin">Animal admin</Link>
             </div>
-            <span>Mayo</span>
-            <Link href="/logout">Logout</Link>
-            <Link href="/login">Login</Link>
+            <span>{data.getLoggedInAnimalByFirstName?.firstName}</span>
+            {data.getLoggedInAnimalByFirstName?.firstName ? (
+              <Link href="/logout">Logout</Link>
+            ) : (
+              <Link href="/login">Login</Link>
+            )}
           </nav>
         </header>
 

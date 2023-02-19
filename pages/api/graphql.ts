@@ -6,6 +6,7 @@ import { GraphQLError } from 'graphql';
 import {
   createAnimal,
   deleteAnimalById,
+  getAnimalByFirstName,
   getAnimalById,
   getAnimals,
   updateAnimalById,
@@ -22,10 +23,24 @@ type AnimalInput = {
   accessory: string;
 };
 
+type LoginArgument = {
+  username?: string;
+  password?: string;
+};
+
+type AnimalAuthenticationContext = {
+  res: {
+    setHeader: (setCookie: string, cookieValue: string) => void;
+  };
+};
+
 const typeDefs = gql`
   type Query {
     animals: [Animal]
     animal(id: ID!): Animal
+
+    # Fake logged in animal
+    getLoggedInAnimalByFirstName(firstName: String!): Animal
   }
 
   type Mutation {
@@ -39,6 +54,8 @@ const typeDefs = gql`
       type: String!
       accessory: String
     ): Animal
+
+    login(username: String!, password: String!): Animal
   }
 
   type Animal {
@@ -49,6 +66,11 @@ const typeDefs = gql`
   }
 `;
 
+// Create fake serializedCookie for authentication
+function createFakeSerializedCookie(firstName: string) {
+  return `fakeSessionToken=${firstName}; HttpOnly; SameSite=lax; Path=/; Max-Age=3600`;
+}
+
 const resolvers = {
   Query: {
     animals: async () => {
@@ -57,6 +79,17 @@ const resolvers = {
 
     animal: async (parent: string, args: Argument) => {
       return await getAnimalById(parseInt(args.id));
+    },
+
+    // Fake logged in animal resolver
+    getLoggedInAnimalByFirstName: async (
+      parent: string,
+      args: { firstName: string },
+    ) => {
+      if (!args.firstName) {
+        throw new GraphQLError('User must be logged in');
+      }
+      return await getAnimalByFirstName(args.firstName);
     },
   },
 
@@ -96,6 +129,30 @@ const resolvers = {
         args.accessory,
       );
     },
+
+    login: async (
+      parent: string,
+      args: LoginArgument,
+      context: AnimalAuthenticationContext,
+    ) => {
+      if (
+        typeof args.username !== 'string' ||
+        typeof args.password !== 'string' ||
+        !args.username ||
+        !args.password
+      ) {
+        throw new GraphQLError('Required field missing');
+      }
+
+      if (args.username !== 'Mayo' || args.password !== 'asdf') {
+        throw new GraphQLError('Invalid username or password');
+      }
+
+      const fakeSerializedCookie = createFakeSerializedCookie(args.username);
+      context.res.setHeader('Set-Cookie', fakeSerializedCookie);
+
+      return await getAnimalByFirstName(args.username);
+    },
   },
 };
 
@@ -108,4 +165,8 @@ const server = new ApolloServer({
   schema,
 });
 
-export default startServerAndCreateNextHandler(server);
+export default startServerAndCreateNextHandler(server, {
+  context: async (req, res) => {
+    return await { req, res };
+  },
+});
