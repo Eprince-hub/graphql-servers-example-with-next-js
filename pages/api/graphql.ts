@@ -34,6 +34,11 @@ type AnimalAuthenticationContext = {
   };
 };
 
+type FakeAdminAnimalContext = {
+  fakeAdminAnimal: { firstName: string } | undefined;
+  req: { cookies: { fakeSessionToken: string } };
+};
+
 const typeDefs = gql`
   type Query {
     animals: [Animal]
@@ -107,7 +112,18 @@ const resolvers = {
       return await createAnimal(args.firstName, args.type, args.accessory);
     },
 
-    deleteAnimalById: async (parent: string, args: Argument) => {
+    deleteAnimalById: async (
+      parent: string,
+      args: Argument,
+      context: FakeAdminAnimalContext,
+    ) => {
+      if (
+        context.fakeAdminAnimal?.firstName !==
+        context.req.cookies.fakeSessionToken
+      ) {
+        throw new GraphQLError('Unauthorized operation');
+      }
+
       return await deleteAnimalById(parseInt(args.id));
     },
 
@@ -167,6 +183,7 @@ const server = new ApolloServer({
 
 export default startServerAndCreateNextHandler(server, {
   context: async (req, res) => {
-    return await { req, res };
+    const fakeAdminAnimal = await getAnimalByFirstName('Otto');
+    return { req, res, fakeAdminAnimal };
   },
 });
