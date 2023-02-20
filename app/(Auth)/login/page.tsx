@@ -3,7 +3,7 @@ import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import LoginForm from './LoginForm';
 
-export default function page() {
+export default function Login() {
   const nextCookies = cookies();
 
   const fakeSessionToken = nextCookies.get('fakeSessionToken');
