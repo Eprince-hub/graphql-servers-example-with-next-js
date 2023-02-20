@@ -1,7 +1,7 @@
 'use client';
 
-import { useApollo } from '@/util/client';
 import { ApolloProvider } from '@apollo/client';
+import { useApollo } from '../util/graphql';
 
 type Props = {
   initialApolloState: string;

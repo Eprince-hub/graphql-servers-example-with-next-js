@@ -1,6 +1,6 @@
-import ApolloClientProvider from '@/app/ApolloClientProvider';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
+import ApolloClientProvider from '../../ApolloClientProvider';
 import LoginForm from './LoginForm';
 
 export default function Login() {

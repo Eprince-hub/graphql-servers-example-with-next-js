@@ -1,7 +1,7 @@
-import { initializeApollo } from '@/util/client';
 import { gql } from '@apollo/client';
 import Image from 'next/image';
 import Link from 'next/link';
+import { initializeApollo } from '../../../util/graphql';
 
 type Props = {
   params: { animalId: string };

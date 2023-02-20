@@ -1,8 +1,8 @@
 import './globals.scss';
-import { initializeApollo } from '@/util/client';
 import { gql } from '@apollo/client';
 import { cookies } from 'next/headers';
 import Link from 'next/link';
+import { initializeApollo } from '../util/graphql';
 import styles from './layout.module.scss';
 
 export const metadata = {

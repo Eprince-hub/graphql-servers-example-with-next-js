@@ -1,8 +1,8 @@
 'use client';
-import { Animal } from '@/database/animals';
 import { gql, useQuery } from '@apollo/client';
 import Image from 'next/image';
 import Link from 'next/link';
+import { Animal } from '../../database/animals';
 
 export type AnimalResponseType = {
   animals: Animal[];

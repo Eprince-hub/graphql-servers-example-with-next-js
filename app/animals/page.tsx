@@ -1,5 +1,5 @@
-import { initializeApollo } from '@/util/client';
 import { gql } from '@apollo/client';
+import { initializeApollo } from '../../util/graphql';
 import ApolloClientProvider from '../ApolloClientProvider';
 import Animals from './Animals';
 

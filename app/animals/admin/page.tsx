@@ -1,8 +1,8 @@
-import ApolloClientProvider from '@/app/ApolloClientProvider';
-import { initializeApollo } from '@/util/client';
 import { gql } from '@apollo/client';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
+import { initializeApollo } from '../../../util/graphql';
+import ApolloClientProvider from '../../ApolloClientProvider';
 import AdminDashboard from './AdminDashboard';
 
 export default async function AnimalsAdminPage() {
