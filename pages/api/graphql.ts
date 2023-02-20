@@ -11,6 +11,7 @@ import {
   getAnimals,
   updateAnimalById,
 } from '../../database/animals';
+import { isUserAdminBySessionToken } from '../../database/users';
 
 type Argument = {
   id: string;
@@ -35,7 +36,7 @@ type AnimalAuthenticationContext = {
 };
 
 type FakeAdminAnimalContext = {
-  fakeAdminAnimal: { firstName: string } | undefined;
+  isAdmin: boolean;
   req: { cookies: { fakeSessionToken: string } };
 };
 
@@ -117,10 +118,7 @@ const resolvers = {
       args: Argument,
       context: FakeAdminAnimalContext,
     ) => {
-      if (
-        context.fakeAdminAnimal?.firstName !==
-        context.req.cookies.fakeSessionToken
-      ) {
+      if (!context.isAdmin) {
         throw new GraphQLError('Unauthorized operation');
       }
 
@@ -183,7 +181,15 @@ const server = new ApolloServer({
 
 export default startServerAndCreateNextHandler(server, {
   context: async (req, res) => {
-    const fakeAdminAnimal = await getAnimalByFirstName('Otto');
-    return { req, res, fakeAdminAnimal };
+    const isAdmin = await isUserAdminBySessionToken(
+      req.cookies.fakeSessionToken!,
+    );
+    return { req, res, isAdmin };
   },
 });
+// export default startServerAndCreateNextHandler(server, {
+//   context: async (req, res) => {
+//     const fakeAdminAnimal = await getAnimalByFirstName('Otto');
+//     return { req, res, fakeAdminAnimal };
+//   },
+// });
