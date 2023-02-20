@@ -1,10 +1,10 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
 export const config = {
   matcher: '/logout',
 };
 
-export function middleware(request) {
+export function middleware(request: NextRequest) {
   const requestHeaders = new Headers(request.headers);
 
   const fakeSessionToken = request.cookies.get('fakeSessionToken')?.value;
@@ -21,6 +21,7 @@ export function middleware(request) {
 
   response.cookies.set({
     name: 'fakeSessionToken',
+    value: '',
     maxAge: -1,
   });
 
