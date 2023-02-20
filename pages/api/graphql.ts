@@ -135,7 +135,7 @@ const resolvers = {
         !args.firstName ||
         !args.type
       ) {
-        throw new GraphQLError('Required field missing');
+        throw new GraphQLError('Required field is missing');
       }
 
       return await updateAnimalById(
@@ -157,7 +157,7 @@ const resolvers = {
         !args.username ||
         !args.password
       ) {
-        throw new GraphQLError('Required field missing');
+        throw new GraphQLError('Required field is missing');
       }
 
       if (args.username !== 'Mayo' || args.password !== 'asdf') {
