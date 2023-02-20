@@ -172,27 +172,41 @@ export default function AdminDashboard() {
         const isEditing = onEditId === animal.id;
         return (
           <div key={`${animal.firstName}-${animal.id}`}>
-            <input
-              disabled={!isEditing}
-              value={isEditing ? firstNameOnEditInput : animal.firstName}
-              onChange={(event) => {
-                setFirstNameOnEditInput(event.currentTarget.value);
-              }}
-            />
-            <input
-              disabled={!isEditing}
-              value={isEditing ? typeOnEditInput : animal.type}
-              onChange={(event) => {
-                setTypeOnEditInput(event.currentTarget.value);
-              }}
-            />
-            <input
-              disabled={!isEditing}
-              value={isEditing ? accessoryOnEditInput : animal.accessory || ''}
-              onChange={(event) => {
-                setAccessoryOnEditInput(event.currentTarget.value);
-              }}
-            />
+            {!isEditing ? (
+              <span className="animalInput">{animal.firstName}</span>
+            ) : (
+              <input
+                className="animalInput"
+                value={firstNameOnEditInput}
+                onChange={(event) => {
+                  setFirstNameOnEditInput(event.currentTarget.value);
+                }}
+              />
+            )}
+
+            {!isEditing ? (
+              <span className="animalInput">{animal.type}</span>
+            ) : (
+              <input
+                className="animalInput"
+                value={typeOnEditInput}
+                onChange={(event) => {
+                  setTypeOnEditInput(event.currentTarget.value);
+                }}
+              />
+            )}
+
+            {!isEditing ? (
+              <span className="animalInput">{animal.accessory || ''}</span>
+            ) : (
+              <input
+                className="animalInput"
+                value={accessoryOnEditInput}
+                onChange={(event) => {
+                  setAccessoryOnEditInput(event.currentTarget.value);
+                }}
+              />
+            )}
 
             <button
               onClick={async () => {
