@@ -1,4 +1,4 @@
-import './globals.scss';
+import './global.scss';
 import { gql } from '@apollo/client';
 import { cookies } from 'next/headers';
 import Link from 'next/link';
